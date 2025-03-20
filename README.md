@@ -1,14 +1,8 @@
 # Restify Docker Setup Guide
 
-
-
 This guide will walk you through setting up a Restify server inside a Docker container, attaching it to a custom network, and running it.
 
-
-
 ---
-
-
 
 ## **1. Prerequisites**
 Make sure you have the following installed:
@@ -16,11 +10,7 @@ Make sure you have the following installed:
 - [Docker Compose](https://docs.docker.com/compose/install/) (optional)
 - Node.js & npm (if running locally before containerizing)
 
-
-
 ---
-
-
 
 ## **2. Project Structure**
 Ensure your project directory contains the following files:
@@ -33,40 +23,28 @@ restify-app/
 │── Dockerfile
 ```
 
-
-
 ### **server.js (Example Restify Server)**
 Ensure your `server.js` listens on **0.0.0.0** to allow access from Docker:
 ```javascript
 const restify = require('restify');
 const server = restify.createServer();
 
-
-
 server.use(restify.plugins.bodyParser());
-
-
 
 server.get('/', (req, res, next) => {
     res.send({ message: 'Restify server is running!' });
     next();
 });
 
-
-
 server.post('/data', (req, res, next) => {
     res.send({ message: 'Data received!', data: req.body });
     next();
 });
 
-
-
 server.listen(3000, '0.0.0.0', () => {
     console.log('Restify server running on port 3000');
 });
 ```
-
-
 
 ---
 
@@ -78,74 +56,44 @@ Create a `Dockerfile` in the same directory:
 # Use official Node.js image
 FROM node:18-alpine
 
-
-
 # Set working directory in the container
 WORKDIR /app
-
-
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-
-
 # Install dependencies
 RUN npm install
-
-
 
 # Copy the rest of the application files
 COPY . .
 
-
-
 # Expose the required port
 EXPOSE 3000
-
-
 
 # Start the Restify server
 CMD ["node", "server.js"]
 ```
 
-
-
 ---
-
-
 
 ## **4. Create and Attach to a Docker Network**
 
-
-
-### **Create a Docker Network**
+### **Attach to the MES Docker Network**
 If you don't already have a custom network, create one:
 ```sh
-docker network create my_network
+docker network ls
 ```
-
 
 
 ### **Build and Run the Restify Container**
 Run the following commands to build and start your container:
 ```sh
 docker build -t restify-app .
-docker run -d --name restify-container --network my_network -p 3000:3000 restify-app
+docker run -d --name restify-container --network MES_NETWORK -p 3000:3000 restify-app
 ```
 
-
-
-This:
-- Builds the Docker image (`restify-app`)
-- Runs a container (`restify-container`) in **detached mode**
-- Attaches it to the **custom network (`my_network`)**
-- Maps **port 3000** to the host machine
-
-
-
 ---
-
 
 
 ## **5. Verify the Setup**
@@ -153,8 +101,6 @@ This:
 ```sh
 docker ps
 ```
-
-
 
 ### **Test the API from the Host**
 Use `curl` to test the API:
@@ -167,7 +113,6 @@ Expected response:
 ```
 
 
-
 ### **Test from Another Docker Container in the Same Network**
 Start a temporary container inside `my_network` and test the connection:
 ```sh
@@ -175,10 +120,7 @@ docker run --rm --network my_network curlimages/curl curl http://restify-contain
 ```
 
 
-
 ---
-
-
 
 ## **6. Updating the Restify Server**
 If you modify `server.js`, you need to rebuild and restart the container:
@@ -202,7 +144,6 @@ docker restart restify-container
 ```
 
 
-
 ---
 
 
@@ -221,11 +162,7 @@ To remove the network (if needed):
 docker network rm my_network
 ```
 
-
-
 ---
-
-
 
 ## **8. Cleanup**
 To remove all unused Docker images, containers, and networks:
@@ -233,11 +170,5 @@ To remove all unused Docker images, containers, and networks:
 docker system prune -a
 ```
 
-
-
 ---
-
-
-
-### 🎉 Your Restify Docker container is now up and running! 🚀
 
