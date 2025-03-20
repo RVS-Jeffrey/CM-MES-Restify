@@ -9,7 +9,11 @@ Make sure you have the following installed:
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/) (optional)
 - Node.js & npm (if running locally before containerizing)
-
+- Restify installed
+```
+npn init -y
+npm install restify
+```
 ---
 
 ## **2. Project Structure**
