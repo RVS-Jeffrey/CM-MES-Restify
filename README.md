@@ -80,7 +80,7 @@ CMD ["node", "server.js"]
 ## **4. Create and Attach to a Docker Network**
 
 ### **Attach to the MES Docker Network**
-If you don't already have a custom network, create one:
+Run the following commands to get the MES_NETWORK name:
 ```sh
 docker network ls
 ```
